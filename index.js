@@ -2,14 +2,16 @@ const express = require('express')
 const session = require('express-session')
 const MongoStore = require("connect-mongo")
 const connectAndListen  = require('./server')
+const passport = require('passport')
+const router = require('./routes/routes')
+
 
 
 //This line will read the .env file and load its contents into the process.env object, making the defined environment variables accessible
 require('dotenv').config()
 
 const app = express()
-
-
+app.use(express.json())
 
 const mongoSessionStore = MongoStore.create({
     mongoUrl: process.env.MONGO_URL,
@@ -30,13 +32,16 @@ app.use(
 )
 
 
-app.get('/',(req,res)=>{
 
-    req.session.viewCount ? req.session.viewCount += 1 : req.session.viewCount = 1
+//passport stuff
+require('./config/passport')
+app.use(passport.initialize())
+app.use(passport.session())
 
-    res.json({viewCount : req.session.viewCount})
 
-})
+
+//router
+app.use('/',router)
 
 
 connectAndListen(app)
