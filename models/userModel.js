@@ -3,7 +3,8 @@ const mongoose = require('mongoose')
 const UserSchema = new mongoose.Schema({
     username: String,
     hash: String,
-    salt: String
+    salt: String,
+    isAdmin: Boolean
 })
 
 // Defines the User model based on the UserSchema and specifies the collection name as 'Users'

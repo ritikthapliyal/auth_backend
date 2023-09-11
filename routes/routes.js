@@ -3,10 +3,11 @@ const { genPassword } = require('../utils/passwordUtils')
 const User = require('../models/userModel')
 const router = express.Router()
 const passport = require('passport')
+const { isAuth } = require('./authMiddleware')
 
 
 
-router.get('/visits',(req,res)=>{
+router.get('/visits', isAuth ,(req,res)=>{
     console.log(req.session)
     console.log(req.user)
     req.session.viewCount ? req.session.viewCount += 1 : req.session.viewCount = 1
@@ -42,6 +43,12 @@ router.post('/register',async (req, res) => {
         res.json({message:"User not created."})
     }
 
+})
+
+router.get('/logout',(req,res)=>{
+    console.log(req)
+    req.logOut()
+    res.status(200).json({ msg : "user logged out."})
 })
 
 
