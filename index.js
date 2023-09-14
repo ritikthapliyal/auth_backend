@@ -26,7 +26,7 @@ app.use(
       saveUninitialized: false,
       store: mongoSessionStore, // Use the connect-mongo session store
       cookie:{
-        maxAge: 1000 * 60 * 2
+        maxAge: 1000 * 60
       }
     })
 )

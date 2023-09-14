@@ -17,6 +17,9 @@ router.get('/visits', isAuth ,(req,res)=>{
 
 
 router.post('/login', passport.authenticate('local', { successRedirect: '/visits', failureRedirect: '/login'}))
+router.get('/google', passport.authenticate('google', {scope : ['profile', 'email']}))
+router.get('/google/callback',passport.authenticate('google'),(req,res)=>{res.redirect('/visits')})
+
 
 
 router.post('/register',async (req, res) => {
@@ -32,7 +35,8 @@ router.post('/register',async (req, res) => {
         const newUser = await User.create({
             username,
             hash,
-            salt
+            salt,
+            googleId: ""
         })
 
         console.log(newUser)
@@ -46,9 +50,15 @@ router.post('/register',async (req, res) => {
 })
 
 router.get('/logout',(req,res)=>{
-    console.log(req)
-    req.logOut()
-    res.status(200).json({ msg : "user logged out."})
+    req.logOut(err => {
+        if (err) {
+            console.error(err);
+            res.status(500).json({ error: 'An error occurred during logout.' })
+        } else {
+            // Logout successful
+            res.status(200).json({ msg: 'User logged out.' })
+        }
+    })
 })
 
 

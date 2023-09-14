@@ -2,8 +2,11 @@ const passport = require('passport')
 const User = require('../models/userModel')
 const { validatePassword } = require('../utils/passwordUtils')
 const LocalStrategy = require('passport-local').Strategy
+const GitHubStrategy = require('passport-github2').Strategy
+const GoogleStrategy = require('passport-google-oauth20').Strategy
 
-const verifyCallback = async (username, password, done)=>{
+
+const verifyCallbackLocal = async (username, password, done)=>{
 
     try{
         const user = await User.findOne({username})
@@ -18,25 +21,57 @@ const verifyCallback = async (username, password, done)=>{
     catch(err){
         return done(err)
     }
-
 }
 
-const strategy = new LocalStrategy(verifyCallback)
 
-passport.use(strategy)
 
+const verifyCallbackGoogle = async (accessToken,refreshToken,profile,done)=>{
+    try{
+        console.log(profile)
+        let user = await User.findOne({googleId : profile.id})
+        console.log(user)
+        if(!user){
+            user = await User.create({
+                username: profile.displayName,
+                hash : "",
+                salt : "",
+                googleId: profile.id,
+                isAdmin: false
+            })
+        }
+
+        done(null,user)
+
+    }catch(err){
+        console.log(err)
+        return done(err)
+    }
+}
+
+
+const googleCreds = {
+    clientID : process.env.GOOGLE_CLIENT_ID,
+    clientSecret : process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: '/google/callback'
+}
+
+
+const localStrategy = new LocalStrategy(verifyCallbackLocal)
+const googleStrategy = new GoogleStrategy(googleCreds,verifyCallbackGoogle)
+
+
+passport.use(localStrategy)
+passport.use(googleStrategy)
 
 passport.serializeUser((user,done)=>{
     done(null,user.id)
 })
 
-passport.deserializeUser(async (userId,done)=>{
-    
+passport.deserializeUser(async (userId,done)=>{ 
     try{
         const user = await User.findById(userId)
         return done(null,user)
     }catch(err){
         return done(err)
     }
-
 })
