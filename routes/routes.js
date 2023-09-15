@@ -18,7 +18,17 @@ router.get('/visits', isAuth ,(req,res)=>{
 
 router.post('/login', passport.authenticate('local', { successRedirect: '/visits', failureRedirect: '/login'}))
 router.get('/google', passport.authenticate('google', {scope : ['profile', 'email']}))
-router.get('/google/callback',passport.authenticate('google'),(req,res)=>{res.redirect('/visits')})
+router.get('/google/callback',passport.authenticate('google'),(req,res)=>{
+
+    if(req.user.hash.length < 1 || req.user.salt.length < 1){
+        const userData = { username: req.user.username, email: req.user.email}
+        const queryParameters = new URLSearchParams(userData).toString();
+        res.redirect(`http://localhost:3000/user_details?${queryParameters}`);
+    }
+    else{
+        res.redirect('http://localhost:3000/dashboard')
+    }
+})
 
 
 

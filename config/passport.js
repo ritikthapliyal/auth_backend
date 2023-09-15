@@ -27,16 +27,15 @@ const verifyCallbackLocal = async (username, password, done)=>{
 
 const verifyCallbackGoogle = async (accessToken,refreshToken,profile,done)=>{
     try{
-        console.log(profile)
         let user = await User.findOne({googleId : profile.id})
-        console.log(user)
         if(!user){
             user = await User.create({
                 username: profile.displayName,
                 hash : "",
                 salt : "",
                 googleId: profile.id,
-                isAdmin: false
+                isAdmin: false,
+                email: profile.emails[0].value
             })
         }
 
@@ -52,7 +51,7 @@ const verifyCallbackGoogle = async (accessToken,refreshToken,profile,done)=>{
 const googleCreds = {
     clientID : process.env.GOOGLE_CLIENT_ID,
     clientSecret : process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: '/google/callback'
+    callbackURL: 'http://localhost:5000/google/callback'
 }
 
 

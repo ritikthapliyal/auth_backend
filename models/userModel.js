@@ -5,7 +5,8 @@ const UserSchema = new mongoose.Schema({
     hash: String,
     salt: String,
     googleId: String,
-    isAdmin: Boolean
+    isAdmin: Boolean,
+    email:String,
 })
 
 // Defines the User model based on the UserSchema and specifies the collection name as 'Users'

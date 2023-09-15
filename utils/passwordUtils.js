@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const crypto = require('crypto')
 
 function validatePassword(password, hash, salt) {
 

@@ -4,6 +4,7 @@ const MongoStore = require("connect-mongo")
 const connectAndListen  = require('./server')
 const passport = require('passport')
 const router = require('./routes/routes')
+const cors = require('cors')
 
 
 
@@ -11,6 +12,7 @@ const router = require('./routes/routes')
 require('dotenv').config()
 
 const app = express()
+app.use(cors({ origin: "http://localhost:3000" }))
 app.use(express.json())
 
 const mongoSessionStore = MongoStore.create({
@@ -41,7 +43,7 @@ app.use(passport.session())
 
 
 //router
-app.use('/',router)
 
+app.use('/',router)
 
 connectAndListen(app)
