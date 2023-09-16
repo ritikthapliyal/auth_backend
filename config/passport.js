@@ -2,7 +2,6 @@ const passport = require('passport')
 const User = require('../models/userModel')
 const { validatePassword } = require('../utils/passwordUtils')
 const LocalStrategy = require('passport-local').Strategy
-const GitHubStrategy = require('passport-github2').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 
 
@@ -13,7 +12,6 @@ const verifyCallbackLocal = async (username, password, done)=>{
     
         //done(error, boolean value to let user access route or not)
         if(!user){ return done(null,false) }
-    
         const isValid = validatePassword(password, user.hash, user.salt)
         if(isValid){ return done(null,user) }
         else { return done(null,false) }
@@ -26,7 +24,7 @@ const verifyCallbackLocal = async (username, password, done)=>{
 
 
 const verifyCallbackGoogle = async (accessToken,refreshToken,profile,done)=>{
-    try{
+    try{                                             
         let user = await User.findOne({googleId : profile.id})
         if(!user){
             user = await User.create({
@@ -51,7 +49,7 @@ const verifyCallbackGoogle = async (accessToken,refreshToken,profile,done)=>{
 const googleCreds = {
     clientID : process.env.GOOGLE_CLIENT_ID,
     clientSecret : process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: 'http://localhost:5000/google/callback'
+    callbackURL: '/auth/google/callback'
 }
 
 

@@ -3,7 +3,7 @@ const session = require('express-session')
 const MongoStore = require("connect-mongo")
 const connectAndListen  = require('./server')
 const passport = require('passport')
-const router = require('./routes/routes')
+const router = require('./routes/authRoutes')
 const cors = require('cors')
 
 
@@ -12,7 +12,10 @@ const cors = require('cors')
 require('dotenv').config()
 
 const app = express()
-app.use(cors({ origin: "http://localhost:3000" }))
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true, // Allow cookies and credentials to be sent
+}))
 app.use(express.json())
 
 const mongoSessionStore = MongoStore.create({
@@ -44,6 +47,6 @@ app.use(passport.session())
 
 //router
 
-app.use('/',router)
+app.use('/auth',router)
 
 connectAndListen(app)
